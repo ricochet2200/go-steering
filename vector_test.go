@@ -58,4 +58,8 @@ func TestNormalize(t *testing.T) {
 	if v.Normalize().Equals(a, .0001) {
 		t.Errorf("Vector Normalization doesn't work")
 	}
+	if v[0] != 3 {
+		t.Errorf("Vector Normalization changed the vector to %f", v[0])
+	}
+
 }

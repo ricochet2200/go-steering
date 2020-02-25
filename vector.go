@@ -7,9 +7,25 @@ type Vector []float32
 func (v Vector) Len() float32 {
 	ret := float32(0)
 	for _, val := range v {
-		ret += val * val
+		ret += (val * val)
 	}
 	return float32(math.Sqrt(float64(ret)))
+}
+
+func (v Vector) Distance(other Vector) float32 {
+	ret := float32(0)
+	for i, val := range v {
+		ret += (val - other[i]) * (val - other[i])
+	}
+	return float32(math.Sqrt(float64(ret)))
+}
+
+func (v Vector) Dot(other Vector) float32 {
+	ret := float32(0)
+	for i, val := range v {
+		ret += (val * other[i])
+	}
+	return ret
 }
 
 func (v Vector) Equals(w Vector, epsilon float64) bool {
@@ -25,53 +41,88 @@ func (v Vector) Equals(w Vector, epsilon float64) bool {
 	return true
 }
 
+func (v Vector) Clone() Vector {
+	ret := make(Vector, len(v), len(v))
+	for i, val := range v {
+		ret[i] = val
+	}
+	return ret
+}
+
 func (v Vector) Plus(w Vector) Vector {
 	if len(v) != len(w) {
-		panic("Vectors for Minus need to be the same length")
+		panic("Vectors for Plus need to be the same length")
 	}
+	ret := make(Vector, len(v), len(v))
 	for i, val := range w {
-		v[i] += val
+		ret[i] = v[i] + val
 	}
-	return v
+	return ret
 }
 
 func (v Vector) Minus(w Vector) Vector {
 	if len(v) != len(w) {
 		panic("Vectors for Minus need to be the same length")
 	}
+	ret := make(Vector, len(v), len(v))
 	for i, val := range w {
-		v[i] -= val
+		ret[i] = v[i] - val
 	}
-	return v
+	return ret
+}
+
+func (v Vector) Hadamard(w Vector) Vector {
+	if len(v) != len(w) {
+		panic("Vectors for Hadamard need to be the same length")
+	}
+	ret := make(Vector, len(v), len(v))
+	for i, val := range w {
+		ret[i] = v[i] * val
+	}
+	return ret
+
 }
 
 func (v Vector) Mult(s float32) Vector {
-	for i, _ := range v {
-		v[i] *= s
+	ret := make(Vector, len(v), len(v))
+	for i, val := range v {
+		ret[i] = val * s
 	}
-	return v
+	return ret
 }
 
 func (v Vector) DividedBy(s float32) Vector {
+	ret := make(Vector, len(v), len(v))
 	for i, _ := range v {
-		v[i] /= s
+		ret[i] = v[i] / s
 	}
-	return v
+	return ret
 }
 
 func (v Vector) Trunc(limit float32) Vector {
-	for i, val := range v {
-		v[i] = float32(math.Max(float64(val), float64(limit)))
+	len := v.Len()
+	if len > limit {
+		return v.Normalize().Mult(limit)
 	}
 	return v
 }
 
+func (gradient Vector) Normal(point Vector, t float32) Vector {
+	g := gradient.Hadamard(point)
+	return Vector{point[0] + g[0]*t, point[1] + g[1]*t, point[2] + g[2]*t}
+}
+
 func (v Vector) Normalize() Vector {
+	ret := make(Vector, len(v), len(v))
 	len := v.Len()
 	for i, val := range v {
-		v[i] = val / len
+		ret[i] = val / len
 	}
-	return v
+	return ret
+}
+
+func (v Vector) Project(u Vector) float32 {
+	return v.Dot(u) / float32(math.Pow(float64(u.Len()), 2))
 }
 
 func (v Vector) Cross(w Vector) Vector {
@@ -100,7 +151,6 @@ func MakeMatrix(row int, col int, data []float32) Matrix {
 		for j := 0; j < row; j++ {
 			ret[i][j] = data[i*row+j]
 		}
-		panic("set data")
 	}
 	return ret
 }
@@ -118,4 +168,12 @@ func (m Matrix) Determinant() float32 {
 	}
 
 	panic("Matrix is not a 2x2 or 3x3 Matrix")
+}
+
+func (m Matrix) Mult(v Vector) Vector {
+	ret := make(Vector, len(v), len(v))
+	for i, col := range m {
+		ret[i] = col.Dot(v)
+	}
+	return ret
 }

@@ -1,0 +1,27 @@
+<html>
+  <head>
+    <meta charset="utf-8">
+    <script src="wasm_exec.js"></script>
+    </head>
+  <body style="margin:0px">
+    <canvas id="mycanvas" border=1 width=400 height=400></canvas>
+    <image id="im"/>
+    <script>
+      const go = new Go();
+      WebAssembly.instantiateStreaming(fetch("main.wasm"), go.importObject).then((result) => {
+      go.run(result.instance);
+      });
+
+      var canvas = document.getElementById("mycanvas");
+      var ctx = canvas.getContext("2d");
+
+      function DrawClamped(w, h, clamped){
+      var buf = new Uint8ClampedArray(clamped);
+      var imageData = ctx.getImageData(0, 0, w, h);
+      imageData.data.set(buf);
+      ctx.putImageData(imageData, 0, 0);
+      }
+      </script>
+
+  </body>
+</html>
