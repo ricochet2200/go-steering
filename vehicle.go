@@ -1,4 +1,4 @@
-package main
+package steering
 
 type Vehicle struct {
 	Mass        float32

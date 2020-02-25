@@ -1,4 +1,4 @@
-package main
+package steering
 
 import "github.com/fogleman/gg"
 

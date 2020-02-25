@@ -1,4 +1,4 @@
-package main
+package steering
 
 type Steerer interface {
 	Position() Vector

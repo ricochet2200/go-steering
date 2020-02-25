@@ -1,4 +1,4 @@
-package main
+package steering
 
 type Quarry interface {
 	Velocity() Vector
