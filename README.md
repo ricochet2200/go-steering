@@ -1,5 +1,5 @@
-# go-pong
-Pong using go and web assembly
+# Go Steering
+This library is intended to be a go implementation of OpenSteer. However this project doesn't work and is pretty much abandoned. 
 
 ##
 Copy the wasm_exec.js file to your project's directory
